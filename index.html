@@ -444,9 +444,14 @@ async function submitQuote(){
   };
 
   try{
-    await fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const __res = await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    let __result = null;
+    try{ __result = await __res.json(); }catch(__e){ __result = null; }
+    if(__result && __result.success === false){
+      throw new Error(__result.error || 'Server reported failure');
+    }
     status.className='status success';
-    status.textContent='✓ Invoice '+currentQNo+' successfully submitted to Google Sheets!';
+    status.textContent = (__result && __result.message) ? ('✓ '+__result.message) : ('✓ Invoice '+currentQNo+' successfully submitted to Google Sheets!');
     status.style.display='block';
     saveCustomerToHistory(name, '');
     currentQNo=genQNo();
