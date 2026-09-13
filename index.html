@@ -726,6 +726,20 @@ function printQuotation(snapshot){
     .note-box{background:#EEF4FC;border-left:4px solid #3A6EA5;padding:11px 14px;border-radius:0 6px 6px 0;font-size:12px;color:#3F4E63;line-height:1.6}
     .note-box strong{color:#12294B;font-weight:800}
 
+    /* FLOATING DOWNLOAD BAR — sits above everything, incl. on phones */
+    .fab-bar{position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;flex-direction:column;gap:9px;align-items:flex-end}
+    .fab{border:none;border-radius:28px;padding:13px 20px;font-family:'Inter',Arial,sans-serif;font-size:14px;font-weight:700;
+         cursor:pointer;box-shadow:0 4px 16px rgba(18,41,75,.30);display:inline-flex;align-items:center;gap:8px;
+         -webkit-tap-highlight-color:transparent;transition:transform .12s,box-shadow .12s}
+    .fab:active{transform:scale(.96)}
+    .fab-pdf{background:#1E4E8C;color:#fff}
+    .fab-print{background:#fff;color:#12294B;border:1px solid #C3D3E8;font-size:13px;padding:10px 17px}
+    .fab[disabled]{opacity:.65;cursor:default}
+    @media (max-width:640px){
+      .fab-bar{right:12px;bottom:12px;left:12px;flex-direction:row;justify-content:stretch}
+      .fab{flex:1;justify-content:center}
+    }
+
     /* TERMS */
     .terms{padding:14px 24px 16px;margin-top:auto}
     .terms-title{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#12294B;margin-bottom:7px;padding-bottom:6px;border-bottom:2px solid #1E4E8C}
@@ -745,6 +759,7 @@ function printQuotation(snapshot){
       @page{margin:0;size:A4}
       *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
       .no-print{display:none!important}
+      .fab-bar{display:none!important}
     }
   </style></head><body>
   <div class="page">
@@ -832,6 +847,11 @@ function printQuotation(snapshot){
       <span class="ft-r">dmtradinghouse2@gmail.com</span>
     </div>
 
+  </div>
+
+  <div class="fab-bar">
+    <button class="fab fab-print" onclick="window.print()">&#128424; Print</button>
+    <button class="fab fab-pdf" id="fab-pdf" onclick="downloadPDF(this)">&#11015; Download PDF</button>
   </div>
 
   <div id="print-tip" class="no-print" style="background:#EEF4FC;border:1px solid #1E4E8C;color:#12294B;font-size:11px;padding:8px 14px;text-align:center;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">
