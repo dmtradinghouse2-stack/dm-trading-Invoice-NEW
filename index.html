@@ -915,12 +915,55 @@ function printQuotation(snapshot){
 
       var fail = function(err){
         restore();
-        alert('PDF generation failed: ' + err + '\n\nUse Ctrl+P and pick "Save as PDF" instead.');
+        alert('PDF generation failed: ' + (err && err.message ? err.message : err) +
+              '\n\nUse the Print button and choose "Save as PDF" as the destination instead.');
       };
+
+      // iOS Safari ignores the <a download> attribute, so html2pdf's .save()
+      // builds the file and then quietly drops it — the tap looks like it did
+      // nothing at all. Build a blob ourselves and hand it to whichever
+      // save route this browser actually supports.
+      var isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      function deliver(blob){
+        var file = null;
+        try { file = new File([blob], opt.filename, { type: 'application/pdf' }); } catch (e) {}
+
+        // Best case on a phone: the native share sheet, which offers "Save to Files".
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({ files: [file], title: opt.filename })
+            .catch(function(){ fallbackSave(blob); });
+        }
+        fallbackSave(blob);
+      }
+
+      function fallbackSave(blob){
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+
+        if (!isIOS && 'download' in a) {
+          a.href = url;
+          a.download = opt.filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          // No download attribute: show the PDF so the viewer's own
+          // share/save control can file it away.
+          var win = window.open(url, '_blank');
+          if (!win) { window.location.href = url; }
+        }
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 20000);
+      }
 
       fontsReady
         .then(function(){
-          return html2pdf().set(opt).from(document.querySelector('.page')).save();
+          return html2pdf().set(opt).from(document.querySelector('.page')).outputPdf('blob');
+        })
+        .then(function(blob){
+          if (!blob || !blob.size) throw new Error('empty document');
+          return deliver(blob);
         })
         .then(restore)
         .catch(fail);
