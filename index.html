@@ -675,13 +675,13 @@ function printQuotation(snapshot){
     .hdr-logo img{width:84px;height:84px;object-fit:contain;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.35),0 4px 14px rgba(9,22,44,.45)}
     .hdr-body{flex:1;padding:18px 18px 18px 4px;display:flex;flex-direction:column;justify-content:center}
     .hdr-body h1{font-size:30px;font-weight:900;color:#ffffff;letter-spacing:.02em;text-transform:uppercase;line-height:1.05}
-    .hdr-body .sub{font-size:11.5px;color:#BBD3EE;margin-top:5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
-    .hdr-body .contacts{margin-top:10px;display:flex;gap:16px;flex-wrap:wrap}
-    .hdr-body .contacts span{font-size:10.5px;color:#D6E3F3;display:flex;align-items:center;gap:4px;font-weight:500}
+    .hdr-body .sub{font-size:12.5px;color:#CFE0F5;margin-top:5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+    .hdr-body .contacts{margin-top:10px;display:flex;gap:8px 14px;flex-wrap:wrap}
+    .hdr-body .contacts span{font-size:12.5px;color:#EAF2FB;display:flex;align-items:center;gap:5px;font-weight:700;letter-spacing:.01em}
     .hdr-inv{min-width:160px;background:rgba(255,255,255,.08);border-left:1px solid rgba(255,255,255,.20);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 18px;gap:3px}
-    .hdr-inv .inv-label{font-size:9.5px;font-weight:800;color:#BBD3EE;text-transform:uppercase;letter-spacing:.16em}
+    .hdr-inv .inv-label{font-size:10.5px;font-weight:800;color:#CFE0F5;text-transform:uppercase;letter-spacing:.16em}
     .hdr-inv .inv-num{font-size:21px;font-weight:900;color:#ffffff;letter-spacing:.03em;margin-top:2px}
-    .hdr-inv .inv-date{font-size:10.5px;color:#D6E3F3;margin-top:3px;font-weight:500}
+    .hdr-inv .inv-date{font-size:12px;color:#EAF2FB;margin-top:3px;font-weight:700}
     .hdr-inv .inv-badge{margin-top:6px;background:#C8A951;color:#12294B;border:none;font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:.1em}
 
     /* CUSTOMER STRIP */
@@ -757,7 +757,7 @@ function printQuotation(snapshot){
         <span class="inv-label">Invoice No</span>
         <span class="inv-num">${invNo}</span>
         <span class="inv-date">${date ? formatDateDMY(date) : '—'}</span>
-        ${poNo ? `<span class="inv-date" style="margin-top:2px;font-size:9px">PO: ${poNo}</span>` : ''}
+        ${poNo ? `<span class="inv-date" style="margin-top:2px;font-size:10.5px">PO: ${poNo}</span>` : ''}
         <span class="inv-badge">VALID 30 DAYS</span>
       </div>
     </div>
