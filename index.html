@@ -659,6 +659,14 @@ function printQuotation(snapshot){
   }).join('');
 
   const w = window.open('', '_blank');
+  if (!w || w.closed || typeof w.document === 'undefined') {
+    // The browser blocked the pop-up. The invoice was already saved to the sheet,
+    // so tell the user exactly what happened instead of failing silently.
+    alert('Invoice saved, but the browser blocked the print window.\n\n' +
+          'Allow pop-ups for this site (click the blocked-pop-up icon in the address bar), ' +
+          'then press "Generate Invoice / Print PDF" again.');
+    return;
+  }
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
   <title>Invoice ${invNo} — DM Trading House</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
@@ -835,8 +843,23 @@ function printQuotation(snapshot){
   <script>
     function downloadPDF(btn){
       var originalText = btn.innerHTML;
+
+      // html2pdf comes from a CDN. If that request was blocked or is still in
+      // flight, calling html2pdf() throws before any promise exists, so the
+      // .catch below would never fire and the button would hang on "Generating…".
+      if (typeof html2pdf === 'undefined') {
+        alert('The PDF library has not loaded yet.\n\n' +
+              'Wait a moment and try again, or use the browser print dialog ' +
+              '(Ctrl+P) and choose "Save as PDF" as the destination.');
+        return;
+      }
+
       btn.disabled = true;
       btn.innerHTML = 'Generating…';
+
+      // Guarantee the button is restored no matter which way this ends.
+      var restore = function(){ btn.disabled = false; btn.innerHTML = originalText; };
+
       var opt = {
         margin: 0,
         filename: 'Invoice_${invNo}.pdf',
@@ -844,14 +867,18 @@ function printQuotation(snapshot){
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
-      html2pdf().set(opt).from(document.querySelector('.page')).save().then(function(){
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }).catch(function(err){
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-        alert('PDF generation failed: ' + err);
-      });
+
+      try {
+        html2pdf().set(opt).from(document.querySelector('.page')).save()
+          .then(restore)
+          .catch(function(err){
+            restore();
+            alert('PDF generation failed: ' + err + '\n\nUse Ctrl+P and pick "Save as PDF" instead.');
+          });
+      } catch (err) {
+        restore();
+        alert('PDF generation failed: ' + err + '\n\nUse Ctrl+P and pick "Save as PDF" instead.');
+      }
     }
     window.onload = function(){
       var imgs = document.images, total = imgs.length, loaded = 0, done = false;
